@@ -1,0 +1,23 @@
+services:
+  db:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=waterlogdb
+    ports:
+      - "5432:5432"
+    networks:
+      - my_network
+
+  web:
+    build: .
+    depends_on:
+      - db
+    command: ["python", "-u", "main.py"]
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge

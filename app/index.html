@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Intake Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <h2>Water Intake Over Time</h2>
+    <canvas id="waterChart"></canvas>
+
+    <script>
+        async function fetchData() {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/data");
+                const data = await response.json();
+                
+                const ctx = document.getElementById("waterChart").getContext("2d");
+
+                new Chart(ctx, {
+                    type: "line",
+                    data: data,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: true },
+                        },
+                        scales: {
+                            x: { title: { display: true, text: "Time" } },
+                            y: { title: { display: true, text: "Water Intake (ml)" } }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+
+        fetchData();
+    </script>
+
+</body>
+</html>

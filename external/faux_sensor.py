@@ -1,9 +1,10 @@
 import random
 import time
-from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
+from fastapi import FastAPI # type:ignore
+from fastapi.responses import StreamingResponse  # type:ignore
 
 app = FastAPI()
+
 
 def simulate_ultrasonic_data():
     """Generator that simulates ultrasonic sensor readings."""
@@ -12,8 +13,8 @@ def simulate_ultrasonic_data():
         yield f"data: {distance}\n\n"
         time.sleep(1)  # Simulating sensor reading every second
 
+
 @app.get("/stream")
 def stream_data():
     """Endpoint that streams fake ultrasonic sensor data via SSE."""
     return StreamingResponse(simulate_ultrasonic_data(), media_type="text/event-stream")
-

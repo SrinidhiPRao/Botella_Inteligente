@@ -1,7 +1,7 @@
 import serial  # type: ignore
 import time
-from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
+from fastapi import FastAPI  # type: ignore
+from fastapi.responses import StreamingResponse # type: ignore
 
 app = FastAPI()
 

@@ -1,5 +1,5 @@
-import requests
-import psycopg2  # PostgreSQL client for TimescaleDB
+import requests  # type:ignore
+import psycopg2  # type: ignore
 import time
 
 # Database connection details (matches docker-compose.yml)

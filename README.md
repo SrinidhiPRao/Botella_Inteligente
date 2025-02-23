@@ -5,6 +5,7 @@
 - Docker connection to local machine established.
 
 ## ToDo
+- Stop fetcher from crashing. It should retry instead.
 - Setup backend in container
 - Setup frontend in container
 - Modularise the code

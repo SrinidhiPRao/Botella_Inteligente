@@ -1,5 +1,6 @@
 from fastapi import FastAPI  # type:ignore
 from fastapi.middleware.cors import CORSMiddleware  # type:ignore
+from db import conn, cur  # Import database connection
 
 app = FastAPI()
 
@@ -15,13 +16,24 @@ app.add_middleware(
 
 @app.get("/data")
 def get_data():
-    """Returns time-series water intake data as JSON."""
+    """Fetches ultrasonic sensor data from TimescaleDB and returns it as JSON."""
+    cur.execute(
+        "SELECT time, distance FROM ultrasonic_data ORDER BY time ASC LIMIT 50;"
+    )
+    results = cur.fetchall()
+
+    if not results:
+        return {"message": "No data available"}
+
+    timestamps = [row[0].isoformat() for row in results]  # Convert timestamps to string
+    distances = [row[1] for row in results]  # Extract distance values
+
     return {
-        "labels": ["08:00", "10:00", "12:00", "14:00", "16:00"],
+        "labels": timestamps,
         "datasets": [
             {
-                "label": "Water Intake",
-                "data": [250, 300, 200, 400, 350],
+                "label": "Ultrasonic Distance (cm)",
+                "data": distances,
                 "borderColor": "blue",
                 "fill": False,
             }

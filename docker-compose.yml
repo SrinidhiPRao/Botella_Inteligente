@@ -26,7 +26,7 @@ services:
     networks:
       - my_network
     ports:
-      - "5000:5000"  # Exposes FastAPI outside the container
+      - "8000:8000"  # Exposes FastAPI outside the container
 
   fetcher:
     build: .

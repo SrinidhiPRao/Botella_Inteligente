@@ -13,7 +13,10 @@
 - Stop fetcher from crashing. It should retry instead.
 
 # Instructions to Run
-
+- Install FastAPI locally
+```
+    pip install fastapi
+```
 - For testing without Arduino.
 
 ```

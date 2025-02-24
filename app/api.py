@@ -26,10 +26,8 @@ def get_data():
     if not results:
         return {"message": "No data available"}
 
-    timestamps = [
-        date.isoformat(row[0]) for row in results
-    ]  # Convert timestamps to string
-    distances = [row[1] for row in results]  # Extract distance values
+    timestamps = list(reversed([date.isoformat(row[0]) for row in results]))
+    distances = list(reversed([row[1] for row in results]))  # Extract distance values
 
     return {
         "labels": timestamps,

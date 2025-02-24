@@ -1,7 +1,8 @@
 import random
 import time
-from fastapi import FastAPI # type:ignore
+from fastapi import FastAPI  # type:ignore
 from fastapi.responses import StreamingResponse  # type:ignore
+import uvicorn  # type:ignore
 
 app = FastAPI()
 
@@ -18,3 +19,7 @@ def simulate_ultrasonic_data():
 def stream_data():
     """Endpoint that streams fake ultrasonic sensor data via SSE."""
     return StreamingResponse(simulate_ultrasonic_data(), media_type="text/event-stream")
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=5000)

@@ -15,12 +15,12 @@
 # Instructions to Run
 - Install FastAPI locally
 ```
-    pip install fastapi
+    pip install fastapi uvicorn
 ```
 - For testing without Arduino.
 
 ```
-    uvicorn external.faux_sensor:app --host 0.0.0.0 --port 5000 --reload
+    python external/faux_sensor.py
 ```
 
 - While Arduino is connected.

@@ -11,7 +11,6 @@ def fetch_and_store_data():
             if line and line.startswith(b"data:"):
                 distance = int(line.decode().split(": ")[1])
                 print(f"Storing Distance: {distance}")
-
                 # Insert data into TimescaleDB
                 cur.execute(
                     "INSERT INTO ultrasonic_data (distance) VALUES (%s)", (distance,)

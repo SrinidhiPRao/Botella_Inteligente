@@ -11,12 +11,16 @@
 ## ToDo
 
 - Stop fetcher from crashing. It should retry instead.
+- 
 
 # Instructions to Run
+
 - Install FastAPI locally
+
 ```
     pip install fastapi uvicorn
 ```
+
 - For testing without Arduino.
 
 ```

@@ -1,45 +1,25 @@
 services:
-  db:
-    image: timescale/timescaledb:latest-pg16
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=waterlogdb
-    ports:
-      - "5432:5432"
-    networks:
-      - my_network
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:  # Ensures DB is ready before starting other services
-      test: ["CMD", "pg_isready", "-U", "postgres"]
-      interval: 5s
-      retries: 5
-      timeout: 3s
-
   web:
     build: .
-    depends_on:
-      db:
-        condition: service_healthy  # Ensures DB is fully ready
     command: ["python", "-u", "./app/main.py"]
     networks:
       - my_network
     ports:
-      - "8000:8000"  # Exposes FastAPI outside the container
+      - "8000:8000"
+    volumes:
+      - sqlite_data:/src/data  # optional volume for db file
 
   fetcher:
     build: .
-    depends_on:
-      db:
-        condition: service_healthy
     command: ["python", "-u", "./app/fetch_data.py"]
     networks:
       - my_network
+    volumes:
+      - sqlite_data:/src/data  # share same db file
 
 networks:
   my_network:
     driver: bridge
 
 volumes:
-  postgres_data:  # Persistent storage for TimescaleDB
+  sqlite_data:

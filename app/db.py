@@ -1,42 +1,30 @@
-import psycopg2  # type: ignore
+import sqlite3
+from datetime import datetime
 import time
 
-# Database connection details
-DB_CONFIG = {
-    "dbname": "waterlogdb",
-    "user": "postgres",
-    "password": "password",
-    "host": "db",  # Use Docker service name
-    "port": "5432",
-}
+# SQLite DB file
+DB_FILE = "data/ultrasonic_data.db"
 
-
-# Function to connect to TimescaleDB with retry logic
+# Connect to SQLite (will create file if it doesn't exist)
 def connect_db():
     while True:
         try:
-            conn = psycopg2.connect(**DB_CONFIG)
-            print("✅ Connected to TimescaleDB!")
+            conn = sqlite3.connect(DB_FILE, check_same_thread=False)
+            print("✅ Connected to SQLite!")
             return conn
-        except psycopg2.OperationalError:
-            print("⏳ Database not ready, retrying in 5 seconds...")
+        except sqlite3.OperationalError:
+            print("⏳ SQLite DB not ready, retrying in 5 seconds...")
             time.sleep(5)
-
 
 # Connect to the database
 conn = connect_db()
 cur = conn.cursor()
 
-# Create a hypertable for time-series data
-cur.execute(
-    """
+# Create table for ultrasonic data
+cur.execute("""
     CREATE TABLE IF NOT EXISTS ultrasonic_data (
-        time TIMESTAMPTZ DEFAULT NOW(),
-        distance INT
+        time TEXT DEFAULT (DATETIME('now')),
+        distance INTEGER
     );
-"""
-)
-cur.execute(
-    "SELECT create_hypertable('ultrasonic_data', 'time', if_not_exists => TRUE);"
-)
+""")
 conn.commit()

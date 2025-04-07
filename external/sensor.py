@@ -1,29 +1,26 @@
 import serial  # type: ignore
 import time
-from fastapi import FastAPI  # type: ignore
-from fastapi.responses import StreamingResponse # type: ignore
+import requests
 
-app = FastAPI()
-
-# Initialize serial connection
+# Arduino serial port
 arduino = serial.Serial('COM5', 9600)
-time.sleep(2)  # Allow Arduino to initialize
+time.sleep(2)  # Wait for Arduino to initialize
 
-def read_ultrasonic_data():
-    """Generator function to read distance data from Arduino via serial."""
-    while True:
-        if arduino.in_waiting > 0:
-            data = arduino.readline().decode('utf-8').strip()
-            if "Distance:" in data:
+EC2_URL = "http://<YOUR_EC2_PUBLIC_IP>:8000/ingest"  # Replace with your EC2 IP
+
+def send_distance(distance: int):
+    try:
+        response = requests.post(EC2_URL, json={"distance": distance})
+        print(f"Sent: {distance} | Response: {response.status_code}")
+    except Exception as e:
+        print(f"Failed to send: {e}")
+
+while True:
+    if arduino.in_waiting > 0:
+        data = arduino.readline().decode('utf-8').strip()
+        if "Distance:" in data:
+            try:
                 distance = int(data.split(" ")[1])
-                yield f"data: {distance}\n\n"  # SSE format
-
-@app.get("/stream")
-def stream_data():
-    """Endpoint that streams ultrasonic sensor data via SSE."""
-    return StreamingResponse(read_ultrasonic_data(), media_type="text/event-stream")
-
-@app.on_event("shutdown")
-def shutdown():
-    """Close serial connection on server shutdown."""
-    arduino.close()
+                send_distance(distance)
+            except ValueError:
+                print(f"Invalid data: {data}")

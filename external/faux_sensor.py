@@ -1,25 +1,26 @@
 import random
 import time
-from fastapi import FastAPI  # type:ignore
-from fastapi.responses import StreamingResponse  # type:ignore
-import uvicorn  # type:ignore
+import requests
 
-app = FastAPI()
+# EC2_URL = "http://<YOUR_EC2_PUBLIC_IP>:8000/ingest"  # Replace with your EC2 IP
+EC2_URL = "http://localhost:8000/ingest"  
+
+
+def send_distance(distance: int):
+    try:
+        response = requests.post(EC2_URL, json={"distance": distance})
+        print(f"Sent: {distance} | Response: {response.status_code}")
+    except Exception as e:
+        print(f"Failed to send: {e}")
 
 
 def simulate_ultrasonic_data():
-    """Generator that simulates ultrasonic sensor readings."""
+    """Simulates ultrasonic sensor readings and sends to EC2."""
     while True:
-        distance = random.randint(10, 400)  # Simulating distances in cm
-        yield f"data: {distance}\n\n"
-        time.sleep(1)  # Simulating sensor reading every second
-
-
-@app.get("/stream")
-def stream_data():
-    """Endpoint that streams fake ultrasonic sensor data via SSE."""
-    return StreamingResponse(simulate_ultrasonic_data(), media_type="text/event-stream")
+        distance = random.randint(10, 400)  # Simulated distance in cm
+        send_distance(distance)
+        time.sleep(1)  # Simulate a 1-second interval
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=5000)
+    simulate_ultrasonic_data()

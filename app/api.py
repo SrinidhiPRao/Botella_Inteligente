@@ -1,11 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from db import conn, cur
 from datetime import datetime
 
 app = FastAPI()
 
-# Enable CORS for frontend access
+# Enable CORS for frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,10 +14,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.post("/ingest")
+async def ingest_data(request: Request):
+    """Receives sensor data from remote device and stores it in SQLite."""
+    try:
+        body = await request.json()
+        distance = int(body["distance"])
+        cur.execute("INSERT INTO ultrasonic_data (distance) VALUES (?);", (distance,))
+        conn.commit()
+        return {"status": "success"}
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}
 
 @app.get("/data")
 def get_data():
-    """Fetches ultrasonic sensor data from SQLite and returns it as JSON."""
+    """Fetches ultrasonic sensor data from SQLite."""
     cur.execute("SELECT time, distance FROM ultrasonic_data ORDER BY time DESC LIMIT 50;")
     results = cur.fetchall()
 

@@ -7,15 +7,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - sqlite_data:/src/data  # optional volume for db file
-
-  fetcher:
-    build: .
-    command: ["python", "-u", "./app/fetch_data.py"]
-    networks:
-      - my_network
-    volumes:
-      - sqlite_data:/src/data  # share same db file
+      - sqlite_data:/src/data  # persistent SQLite DB
 
 networks:
   my_network:
